@@ -4,6 +4,8 @@
 
 本教程参考 [skyblog](https://www.skyblogs.xyz/index.php/2023-01-30/%E6%8F%90%E6%9D%83%E8%BF%9B%E5%85%A5%E4%B8%AD%E5%9B%BD%E7%A7%BB%E5%8A%A8rax3000q%E8%B7%AF%E7%94%B1%E5%99%A8%E7%9A%84ssh%E5%B9%B6%E5%AE%89%E8%A3%85luci/) 、[恩山 imlk](https://www.right.com.cn/forum/thread-8111244-1-1.html) ，OpenWrt 固件由 [NWrt](https://www.right.com.cn/forum/forum.php?mod=viewthread&tid=8312936&highlight=rax3000) 团队提供，本仓库仅提供个人备份用途，有其他特殊需求请联系 NWrt 付费，固件基于 [QSDK](https://wiki.codelinaro.org/en/clo/qsdk/overview) 项目编译。
 
+**<u>请注意</u>**：开始本教程之前请务必**自行备份**机器原本固件，刷机过程中造成的一切后果**自行承担**。
+
 ## 一、取得权限
 
 有两种取得权限的方式，分别是 `ssh` 和 `telnet`，本文将分别介绍两种方式：
@@ -48,8 +50,8 @@
 - 电脑进入控制面板内的网络接口设置网口为静态 ip `192.168.1.2` 子网掩码 `255.255.255.0`
 - 在路由器按住 `reset`，插上电源 10 秒后松开 reset，浏览器输入 `192.168.1.1` 进入 `Uboot`
 - 选择 `openwrt-fw` 内的任意一个刷机包刷入即可
-  - 12 月的版本带 `passwall` ,但有无法启动的问题（不稳定）
+  - 12 月的版本带 `passwall` ,但有无法启动的问题（**不稳定**）
   - 11 月版本不带 `passwall` ,可通过软件源安装（稳定）
-  - 其他版本请自行测试，理论上越新的版本越稳定
+  - 其他版本请**自行测试**
 - 刷入完毕后机器将会重启，耐心等待一会即可进入系统
 
