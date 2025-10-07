@@ -1,68 +1,120 @@
-- # Mobile RAX3000-Q(Y) Router Flashing Tutorial
+# Flashing Guide for China Mobile RAX3000-Q(Y) Router
 
-  This tutorial references [skyblog](https://www.skyblogs.xyz/index.php/2023-01-30/提权进入中国移动rax3000q路由器的ssh并安装luci/), [恩山 imlk](https://www.right.com.cn/forum/thread-8111244-1-1.html), and the OpenWrt firmware is provided by the [NWrt](https://www.right.com.cn/forum/forum.php?mod=viewthread&tid=8312936&highlight=rax3000) team. This repository is for personal backup purposes only. For other special requests, please contact NWrt for payment. The firmware is compiled based on the [QSDK](https://wiki.codelinaro.org/en/clo/qsdk/overview) project.
+[中文版](readme.md)
 
-  **Please Note**: Before starting this tutorial, be sure to **back up** the original firmware of the device. You will **bear all consequences** resulting from the flashing process.
+This tutorial references [skyblog](https://www.skyblogs.xyz/index.php/2023-01-30%E6%8F%90%E6%9D%83%E8%BF%9B%E5%85%A5%E4%B8%AD%E5%9B%BD%E7%A7%BB%E5%8A%A8rax3000qE8%B7%AF%E7%94%B1%E5%99%A8%E7%9A%84ssh%E5%B9%B6%E5%AE%89%E8%A3%85luci/) and[Right Forum (imlk)](https://www.right.com.cn/forum/thread-8111244-1-1.html).
+The OpenWrt firmware is compiled based on the [QSDK](https://wiki.codelinaro.orgen/clo/qsdk/overview) project and provided by the [NWrt](https://www.right.comcn/forum/forum.php?mod=viewthread&tid=8312936&highlight=rax3000) team.
+This repository is for **personal backup purposes only**. For other specificneeds, please contact NWrt.
 
-  ## I. Obtaining Access
+**<u>Important Notice</u>**:
+Before proceeding, make sure to **back up** the original firmware of yourrouter. You are **solely responsible** for any risks or damages that may occurduring the flashing process.
 
-  There are two ways to obtain access: `ssh` and `telnet`. This article will introduce both methods:
+---
 
-  ### 1. Obtaining SSH
+## 1. Gaining Access Privileges
 
-  - First, access the backend page (backend address, username, and password can be found on the back of the router).
-  - Navigate to "More --> Diagnostics --> Ping".
-  - In the "URL or IP address" input box, enter: `$(dropbear${IFS}-p${IFS}22)` to start dropbear.
-  - Then use `$(passwd${IFS}-d${IFS}root)` to delete the root password.
-  - Use the ssh command to connect to the router: `ssh root@192.168.x.x`, and you will directly enter without being prompted for a password.
+**Warning:**
+The privilege escalation methods described below may **stop working** afterfirmware updates.
+If you fail to gain access, please check the [Issues page](https://github.comsfxfs/rax3000qy-OpenWrt/issues), refer to [other tutorials](https://hugo.utermuxdev/default/rax3000q-latest/), or search for alternative methods.
+You are also welcome to open a new issue for help.
 
-  ### 2. Obtaining Telnet
+There are two main methods to gain access: `SSH` and `Telnet`.
+(There is also a serial UART method that requires disassembling the router, butit is **not** covered in this guide.)
 
-  - First, access the backend page (backend address, username, and password can be found on the back of the router).
-  - Navigate to "More --> Diagnostics --> Ping".
-  - Use `$(passwd${IFS}-d${IFS}root)` to delete the root password.
-  - Re-enter the backend page using the username and password: `superadmin: 83583000`.
-  - In the "Management - System Settings" page, you can enable telnet.
-  - Note that the telnet port number is `4719`, and you should use `telnet 192.168.10.1 4719` to log in, with the username as root and no password.
+---
 
-  ## II. Flashing Uboot
+### 1.1 Enabling SSH (Option 1)
 
-  - Open `WinSCP` on your computer.
+1. Log in to the router’s admin page (check the default address, username, andpassword on the router’s label).
+2. Go to **More → Diagnostics → Ping**.
+3. In the "URL or IP address" input box, enter:
 
-  - Create a new site—select scp as the file protocol—enter the router's IP as the hostname—log in with username root and no password.
+   ```
+   $(dropbear${IFS}-p${IFS}22)
+   ```
 
-  - Place the `nwrt_rax3000qy_uboot.mbn` and `nwrt_rax3000qy_mibib.bin` files from the `uboot` folder into the router's `/tmp` folder.
+   to start the dropbear SSH service.
+4. Then run the following command to remove the root password:
 
-  - Enter the router terminal and input the following two commands:
+   ```
+   $(passwd${IFS}-d${IFS}root)
+   ```
+5. You can now connect to the router using SSH:
 
-    ```bash
-    mtd write /tmp/nwrt_rax3000qy_uboot.mbn /dev/mtd11
-    
-    mtd write /tmp/nwrt_rax3000qy_mibib.bin /dev/mtd1
-    ```
+   ```
+   ssh root@192.168.x.x
+   ```
 
-  - At this point, uboot has been successfully flashed, and you can disconnect the power.
+   You should be logged in directly without being prompted for a password.
 
-  ## III. Flashing OpenWrt
+---
 
-  - Set your computer’s network interface to a static IP of `192.168.1.2` with a subnet mask of `255.255.255.0`.
+### 1.2 Enabling Telnet (Option 2)
 
-  - Press and hold the `reset` button on the router, plug in the power for 10 seconds, then release the reset button. Enter `192.168.1.1` in your browser to access `Uboot`.
+1. Log in to the router’s admin page (address, username, and password are on therouter’s label).
+2. Go to **More → Diagnostics → Ping**.
+3. Run the following command to remove the root password:
 
-  - Choose any firmware package from
+   ```
+   $(passwd${IFS}-d${IFS}root)
+   ```
+4. Log back into the admin page using:
 
-     
+   ```
+   Username: superadmin  
+   Password: 83583000
+   ```
+5. Go to **Management → System Settings** and enable **Telnet**.
+6. The Telnet port number is **4719**.
+   Connect using:
 
-    ```
-    openwrt-fw
-    ```
+   ```
+   telnet 192.168.10.1 4719
+   ```
 
-     
+   Username: `root`
+   Password: *(leave empty)*
 
-    to flash:
+---
 
-    - The December version includes `passwall`, but has startup issues (**unstable**).
-    - The November version does not include `passwall`, but it can be installed from the software source (stable).
-    - Other versions please **test yourself**.
+## 2. Flashing U-Boot
 
-  - After flashing, the device will reboot. Wait a moment to enter the system.
+1. On your PC, open **WinSCP**.
+2. Create a new site:
+
+   * File protocol: `SCP`
+   * Host name: router IP address
+   * Username: `root`
+   * Password: *(leave empty if none)*
+3. Upload the following files from the `uboot` folder to the router’s `/tmp`directory:
+
+   * `nwrt_rax3000qy_uboot.mbn`
+   * `nwrt_rax3000qy_mibib.bin`
+4. In the router terminal, execute the following commands:
+
+   ```bash
+   mtd write /tmp/nwrt_rax3000qy_uboot.mbn /dev/mtd11
+   
+   mtd write /tmp/nwrt_rax3000qy_mibib.bin /dev/mtd1
+   ```
+5. The U-Boot flashing process is now complete. You may disconnect the power.
+
+---
+
+## 3. Flashing OpenWrt Firmware
+
+1. On your computer, set the network interface to a static IP:
+
+   * IP Address: `192.168.1.2`
+   * Subnet Mask: `255.255.255.0`
+2. Hold down the **reset** button on the router, plug in the power, and releasethe reset button after **10 seconds**.
+3. In your browser, navigate to `192.168.1.1` to enter the **U-Boot webinterface**.
+4. Choose any firmware from the `openwrt-fw` folder to flash:
+
+   * **Version 2023-12**: includes `passwall`, but may fail to boot (**unstable**)
+   * **Version 2023-11**: does not include `passwall`, can be installed manually (**stable**)
+   * Other versions: **test at your own risk** (in theory, newer = more stable)
+5. After flashing, the router will reboot automatically. Wait patiently until itfinishes booting.
+
+   * Default username: `root`
+   * Default password: `password`
