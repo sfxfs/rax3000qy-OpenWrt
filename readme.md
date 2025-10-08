@@ -8,7 +8,7 @@
 
 ## 一、取得权限
 
-**注意！** 本文介绍的获取权限方法可能会随着系统更新**失效**，如果发现无法取得权限，请查看本仓库 [issue](https://github.com/sfxfs/rax3000qy-OpenWrt/issues) 和 [其他教程](https://hugo.utermux.dev/default/rax3000q-latest/) 或自行搜索其他方法，有其他问题也欢迎开 issue。
+**注意！** 本文介绍的获取权限方法可能会随着系统更新**失效**，如果发现无法取得权限，请查看本仓库 [issue](https://github.com/sfxfs/rax3000qy-OpenWrt/issues)、[docs](https://github.com/sfxfs/rax3000qy-OpenWrt/tree/main/docs) 和 [其他教程](https://hugo.utermux.dev/default/rax3000q-latest/) 或自行搜索其他方法，有其他问题也欢迎开 issue。
 
 有两种取得权限的方式，分别是 `ssh` 和 `telnet`（同时也有拆机后通过调试串口刷机的方式，但本教程不涉及，可自行搜索）：
 
