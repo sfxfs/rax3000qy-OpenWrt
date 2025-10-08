@@ -57,3 +57,8 @@
   - 其他版本请**自行测试**（**理论上**越新越稳定）
 - 刷入完毕后机器将会重启，耐心等待一会即可进入系统，用户名为 `root` ，密码为 `password`
 
+---
+
+![Star History Chart](https://api.star-history.com/svg?repos=sfxfs/rax3000qy-OpenWrt&type=Date)
+
+
