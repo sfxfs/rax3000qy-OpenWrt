@@ -15,11 +15,11 @@
 ### 1. 取得 SSH（二选一）
 
 - 首先进入后台页面 (后台地址、用户名和密码请看路由器背面)
-- 登录后在浏览器控制台执行以下脚本（将 `sessionId` 替换为你自己的值）：
+- 登录后在浏览器控制台执行以下脚本（将 `sessionId` 替换为你自己的值，可在浏览器开发者工具的请求参数或 Cookie 中找到）：
 
   ```js
   {
-      const sessionId = "04ff9afd911be3d3b9232dce7febd48e";   //替换为你的sessionId
+      const sessionId = "YOUR_SESSION_ID_HERE";   //替换为你的sessionId
 
 
       const commands = [
@@ -33,7 +33,7 @@
           "/etc/init.d/dropbear start"
       ];
 
-      const shellCmd = commands.map(cmd => cmd.replace(/ /g, "${IFS}")).join(";");
+      const shellCmd = commands.map(cmd => cmd.replace(/ /g, "${IFS}")).join(";"); // 用 ${IFS} 代替空格，适配该接口命令解析
 
 
       fetch("/itms", {
@@ -58,9 +58,11 @@
   }
   ```
 
+- 脚本中会将命令里的空格替换为 `${IFS}`，这是为了适配该接口的命令解析方式
+
 - 执行完成后，使用 ssh 连接路由器：`ssh root@192.168.x.x`（root 默认无密码）
 - 联网后系统可能会自动打补丁封禁 22 端口，重置系统即可恢复
-- 参考讨论：<https://www.right.com.cn/forum/forum.php?mod=viewthread&tid=8445553&extra=&page=1>
+- 参考讨论: <https://www.right.com.cn/forum/forum.php?mod=viewthread&tid=8445553&extra=&page=1>
 
 ### 2. 取得 Telnet（二选一）
 
@@ -102,4 +104,3 @@
 ---
 
 ![Star History Chart](https://api.star-history.com/svg?repos=sfxfs/rax3000qy-OpenWrt&type=Date)
-
