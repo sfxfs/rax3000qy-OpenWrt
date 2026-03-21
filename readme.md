@@ -79,7 +79,7 @@
 - 打开 Chrome 调试窗口，切换到「网络（Network）」
 - 刷新页面后，找到 `items` 相关的 POST 请求
 - 在「负载（Payload）」中找到 `sessionId` 并记录
-- 切换到「控制台（Console）」，输入以下脚本（注意替换 `sessionId` 和路由器地址；示例中地址为 `cmcc.wifi`，请同步替换 `url` 与下方 SSH 命令中的主机名）：
+- 切换到「控制台（Console）」，输入以下脚本（注意替换示例地址 `cmcc.wifi` 为实际路由器地址，需同步替换 `url` 与下方 SSH 命令中的主机名）：
 
   ```javascript
   var url = "http://cmcc.wifi/itms";
@@ -87,7 +87,7 @@
     cmd: 22,
     fname: "websys.log|passwd -d root",
     method: "get",
-    sessionId: "YOUR_SESSION_ID_HERE" // 替换为步骤 3 记录的 sessionId
+    sessionId: "YOUR_SESSION_ID_HERE" // 替换为上述步骤中记录的 sessionId
   };
   var xhr = new XMLHttpRequest();
   xhr.open("POST", url, true);
